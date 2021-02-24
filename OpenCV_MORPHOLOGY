@@ -1,1 +1,73 @@
 
+#include <iostream>
+#include <cstdio>
+#include "opencv2\highgui\highgui.hpp"
+#include <vector>
+#include <opencv2\core\core.hpp>
+#include <opencv2\opencv.hpp>
+
+
+
+void MorphologyIntroDemo(string path)
+{
+	cv::Mat image = cv::imread(path);
+	int p_value = 0;
+	int p_time = 0;
+	int p_size = 1;
+	int shape = 0;
+	
+	if (image.data)
+	{
+		string wName1 = "Morphology Demo Picture";
+		string wName2 = "Trackbars";
+		string ProcessNames[] =
+		{
+			"OPEN", //2
+			"CLOSE", //3
+			"GRADIENT", //4
+			"TOP HAT", //5
+			"BLACK HAT" //6
+		};
+
+		cv::namedWindow("LOADED IMAGE", cv::WINDOW_NORMAL);
+		cv::namedWindow(wName1, cv::WINDOW_NORMAL);
+		cv::namedWindow(wName2, cv::WINDOW_NORMAL);
+		cv::resizeWindow(wName2, 640, 300);
+		cv::createTrackbar("Process", wName2, &p_value, 4);
+		cv::createTrackbar("Times", wName2, &p_time, 15);
+		cv::createTrackbar("Size", wName2, &p_size, 15);
+		cv::createTrackbar("Shape", wName2, &shape, 2);
+		cv::imshow("LOADED IMAGE", image);
+		
+		while (true)
+		{
+			cv::Mat kernel;
+			cv::Mat processImage;
+			if (p_size == 0)
+				p_size = 1;
+			cv::Size s(p_size, p_size);
+			kernel = cv::getStructuringElement(shape, s, cv::Point(-1, -1));
+			//getstructuringElement yapıyp getir anlamına gelir,  (şekil, size, baslangic noktası);
+			cv::morphologyEx(image, processImage, p_value + 2, kernel, cv::Point(-1, -1),p_time);
+			//(islenecek resim, sonuc resim, uygulanacak islem, isleme sekli, baslangıc noktası, uygulanma sayısı)
+			cv::putText(processImage, ProcessNames[p_value], cv::Point(50, 50), CV_FONT_ITALIC, 2, cv::Scalar(128, 0, 128),7);
+			cv::imshow(wName1, processImage);
+			cv::waitKey(23);
+		}
+
+	}
+
+	else
+	{
+		cout << "Function MorphologyIntroDemo Exception: Cannot open file !"<<endl;
+	}
+	
+	return;
+
+}
+
+
+int main()
+{
+	MorphologyIntroDemo(//your picture path);
+}
