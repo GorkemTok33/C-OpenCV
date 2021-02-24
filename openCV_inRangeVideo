@@ -1,0 +1,80 @@
+#include <iostream>
+#include <cstdio>
+#include "opencv2\highgui\highgui.hpp"
+#include <vector>
+#include <opencv2\core\core.hpp>
+#include <opencv2\opencv.hpp>
+
+using namespace std;
+
+void InRangeVideo(string filePath)
+{
+	cv::VideoCapture video;
+	video.open(filePath);
+
+	if (video.isOpened())
+	{
+		cv::Mat frame;
+		cv::Mat gray;
+		cv::Mat hsv;
+		cv::Mat after_process;
+		int fps = 23;
+
+		cout << "Video openned !";
+		string wName = "HSV Control";
+		int h = 0, h_ = 0, s = 0, s_ = 0, v = 0, v_ = 0;
+		cv::namedWindow(wName, CV_WINDOW_NORMAL);
+		cv::namedWindow("GRAY", CV_WINDOW_NORMAL);
+		cv::namedWindow("AFTER PROCESS", CV_WINDOW_NORMAL);
+		cv::namedWindow("BEFORE PROCESS", CV_WINDOW_NORMAL);
+		cv::resizeWindow(wName, 320, 380);
+		cv::resizeWindow("GRAY", 480, 360);
+		cv::resizeWindow("AFTER PROCESS", 480, 360);
+		cv::resizeWindow("BEFORE PROCESS", 480, 360);
+		cv::createTrackbar("H min:", wName, &h, 255);
+		cv::createTrackbar("H max:", wName, &h_, 255);
+		cv::createTrackbar("S min:", wName, &s, 255);
+		cv::createTrackbar("S max:", wName, &s_, 255);
+		cv::createTrackbar("V min:", wName, &v, 255);
+		cv::createTrackbar("V max:", wName, &v_, 255);
+
+		while(true)
+		{
+			if (video.grab())
+			{
+				video.retrieve(frame);
+				cv::imshow("BEFORE PROCESS", frame);
+				cv::cvtColor(frame, hsv, CV_BGR2HSV);
+				cv::inRange(hsv, cv::Scalar(h, s, v), cv::Scalar(h_, s_, v_), gray);
+				cv::imshow("GRAY", gray);
+				cv::cvtColor(gray, after_process, CV_GRAY2BGR);
+				cv::imshow("AFTER PROCESS", frame&after_process);
+			}
+
+			else
+			{
+				break;
+			}
+
+			if (cv::waitKey(fps) == 27)
+				break;
+		}
+
+		video.release();
+		cv::destroyAllWindows();
+		return;
+	}
+
+	else
+	{
+		cout << "Funciton InRangeVideo Exception: Cannont open file from " + filePath +
+			", please check your file path !";
+	}
+
+	return;
+}
+
+int main()
+{
+  InRangeVideo(//your video file path)
+}
