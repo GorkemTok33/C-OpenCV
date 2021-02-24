@@ -1,0 +1,62 @@
+void InRangePhoto(string filePath)
+{
+	cv::Mat ORIGINAL_IMAGE = cv::imread(filePath);
+
+	if (ORIGINAL_IMAGE.data)
+	{
+		//INITIALIZE
+		cout << "File openned !";
+		string wName = "HSV Control";
+		int h = 0, h_ = 0, s = 0, s_ = 0, v = 0, v_ = 0;
+		cv::namedWindow(wName,CV_WINDOW_NORMAL);
+		cv::namedWindow("GRAY", CV_WINDOW_NORMAL);
+		cv::namedWindow("AFTER PROCESS", CV_WINDOW_NORMAL);
+		cv::namedWindow("BEFORE PROCESS", CV_WINDOW_NORMAL);
+		cv::resizeWindow(wName, 320, 380);
+		cv::resizeWindow("GRAY", 480, 360);
+		cv::resizeWindow("AFTER PROCESS", 480, 360);
+		cv::resizeWindow("BEFORE PROCESS", 480, 360);
+		cv::createTrackbar("H min:", wName, &h, 255);
+		cv::createTrackbar("H max:", wName, &h_, 255);
+		cv::createTrackbar("S min:", wName, &s, 255);
+		cv::createTrackbar("S max:", wName, &s_, 255);
+		cv::createTrackbar("V min:", wName, &v, 255);
+		cv::createTrackbar("V max:", wName, &v_, 255);
+		cv::Mat HSV_IMAGE;
+		cv::cvtColor(ORIGINAL_IMAGE, HSV_IMAGE, CV_BGR2HSV);
+		cv::Mat grayDetectColor;
+		cv::Mat bgr_image;
+		cv::imshow("BEFORE PROCESS", ORIGINAL_IMAGE);
+		while (true)
+		{
+			/*resmi hsv ye çevirdik sonra hsv üzerinden filtreleme yapıp inRange fonksiyonu sonucunda
+			üretilen filtrelenmiş  tek kanallı resmi grayDetectColor a yazdırdık. bundan sonra resmi tekrar
+			bgr ye çevirdik ve sonuc mükemmel*/
+			cout << h << s << v<<endl;
+			cv::inRange(HSV_IMAGE, cv::Scalar(h, s, v), cv::Scalar(h_, s_, v_), grayDetectColor);
+			cv::imshow("GRAY", grayDetectColor);
+			cv::cvtColor(grayDetectColor, bgr_image, CV_GRAY2BGR);
+			cv::imshow("AFTER PROCESS", ORIGINAL_IMAGE&bgr_image);
+			cv::waitKey(23);
+		}
+	}
+
+	else
+	{
+		cout << "Funciton InRangePhoto Exception: Cannont open file from " + filePath + 
+			", please check your file path !";
+	}
+
+	return;
+}
+
+int main()
+{
+	InRangePhoto(//your file path)
+}
+
+
+
+
+
+
